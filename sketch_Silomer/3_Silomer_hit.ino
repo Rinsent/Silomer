@@ -170,5 +170,31 @@ void hit() {
     //КОСТЫЛЬ!Вручную управляем CS дисплея, так как при работе через библоиотеку в буфер лезет лишний кусок от мосфетов.
     digitalWrite (disp_pin, LOW);
     mosfet.digitalWrite (ALL, ALL, LOW);
-  }
+
+    //Маленький доп.
+    //Возможность переключить режим в случае цикличиского срабатывания удара
+    //Отсечка таймера
+    tm = millis();
+    //В течении N времени
+    do {
+      //Пишем надпись
+      if (displayType == 0) {
+        qd.displayDigits(QD_MINUS, QD_MINUS, QD_MINUS, QD_MINUS);
+      }
+      else if (displayType == 1) {
+        //Делаем надпись ---- вручную
+        digitalWrite(old_display_cs_pin, LOW);
+        shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00000010); //-
+        shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00000010); //-
+        shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00000010); //-
+        shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00000010); //-
+        digitalWrite(old_display_cs_pin, HIGH);
+
+      }
+      //Опрашиваем кнопки
+      buttonSelect.tick();
+      buttonMinus.tick();
+      buttonPlus.tick();
+    } while (millis() - tm < 1000);
+    }
 }
