@@ -53,9 +53,9 @@ void piezo_calibrateHigh() {
     //Пишем (hItN)
     if (displayType == 0 ) {
       switch (hit) {
-        case 0: qd.displayDigits(QD_h, QD_I, QD_t, QD_3); break;
-        case 1: qd.displayDigits(QD_h, QD_I, QD_t, QD_2); break;
-        case 2: qd.displayDigits(QD_h, QD_I, QD_t, QD_1); break;
+        case 0: qd.displayDigits(QD_H, QD_I, QD_t, QD_3); break;
+        case 1: qd.displayDigits(QD_H, QD_I, QD_t, QD_2); break;
+        case 2: qd.displayDigits(QD_H, QD_I, QD_t, QD_1); break;
       }
       digitalWrite (disp_pin, LOW);
     }
@@ -69,7 +69,7 @@ void piezo_calibrateHigh() {
       }
       shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00011110); //t
       shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b01100000); //I
-      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b01101110); //h
+      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b01101110); //H
       digitalWrite(old_display_cs_pin, HIGH);
     }
     //Ожидаем удар
@@ -182,6 +182,8 @@ void difLvl () {
 void clickSelect() {
   //Циклически меняет режимы с 0 по 3
   (mode < 3) ? mode++ : mode = 0;
+  //Обнуляем флаг для первой функции
+  modeFlag = 0;
   //Сбрасывает таймер для корректного отображения символов на дисплее при перелючении режима
   tm3 = millis();
 }
@@ -191,8 +193,8 @@ void clickMinus() {
   switch (mode) {
     //В игровом режиме циклически понижает сложность
     case 0: (dif > 1) ? dif-- : dif = 9; break;
-    //В отладочном режиме запускает автокаллибровку помех и переводит силомер в игровой режим
-    case 1: mode = 0; piezo_calibrateLow(); break;
+    //В отладочном режиме запускает автокаллибровку помех и сбрасываем флажок надписи, что бы после окончания калибровки опять были буквы
+    case 1: modeFlag = 0; piezo_calibrateLow(); break;
     //В режиме помех, если значение помехи больше 0, уменьшает ее на 1. ВНИМАИЕ! На дисплее в этот момент отображеться значение ПОМЕХИ + ПРОЦЕНТНОГО ФИЛЬТРА! Отображаемый шаг может быть больше 1!
     case 2: if (stray > 0) {
         stray--;
@@ -221,7 +223,7 @@ void clickPlus() {
   //Тоже самое что и в минусе, только не выпадаем за верхний (1023) предел датчика.
   switch (mode) {
     case 0: (dif < 9) ? dif++ : dif = 1; break;
-    case 1: mode = 0; piezo_calibrateHigh(); break;
+    case 1: modeFlag = 0; piezo_calibrateHigh(); break;
     case 2: if (stray <= 1023) {
         stray++;
         //Защита от перевала нижней помехи за максимальную силу удара. Если ее не ставить, то может сложится ситуация когда силомер просто войдет в цикл hit().
@@ -295,8 +297,28 @@ void longPressPlus () {
 
 //Мод отладки. Смотрим показание с пьезика, на кнопках автоотладка.
 void mode1() {
-  //переменная для работы в функции
+  //переменныу для работы в функции
+  //Помехи
   static int interferenceShow;
+  //Емли при переходе в цикл не показывалась надпись, то показать ее
+  if (!modeFlag) {
+    //Ставим флаг на 1, что бы надпись показалась только 1 раз
+    modeFlag = 1;
+    //Текст
+    if (displayType == 0) {
+      qd.displayDigits(QD_L, QD_b, QD_r, QD_d);
+    }
+    else if (displayType == 1) {
+      digitalWrite(old_display_cs_pin, LOW);
+      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00001010); //r
+      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00011110); //t
+      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b00101010); //n
+      shiftOut(old_display_mo_pin, old_display_mi_pin, LSBFIRST, 0b01100000); //I
+      digitalWrite(old_display_cs_pin, HIGH);
+    }
+    //Ждем, что бы человек увидел надпись
+    delay (3000);
+  }
   //Пока время меньше N ищем максимальную помеху и записываем ее
   if (millis() - tm3 < 500 && interferenceShow < analogRead (piez_pin)) {
     interferenceShow = analogRead (piez_pin);
