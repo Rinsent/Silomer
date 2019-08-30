@@ -160,7 +160,10 @@ void hit() {
       }
       //Если все выше законченно, и пришел сигнал о том, что плеер доиграл трек
       if (digitalRead (busy_pin)) {
-        break;
+        delay (500);
+        if (digitalRead (busy_pin)) {
+          break;
+        }
       }
     }
     //Задержка между отработкой всей программы и началом нового цикла приема сигнала
@@ -196,5 +199,5 @@ void hit() {
       buttonMinus.tick();
       buttonPlus.tick();
     } while (millis() - tm < 1000);
-    }
+  }
 }
