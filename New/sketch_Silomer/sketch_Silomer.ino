@@ -5,18 +5,18 @@
  * 1_ SIlomer_settings - Настройки
  * 2_ SIlomer_body     - Константы, setup, loop.
  * 3_ SIlomer_hit      - Функция hit()
- * 4_ SIlomer_funcion  - Отслаьные функции
+ * 4_ SIlomer_funcion  - Остальные функции
  */
 
  /*
-  * Перед загрузкй скетча в плату уббедитесь что в "инструменты -> платы -> менеджер плат в Arduino AVR Boards (скорее всего самая врехняя) стоит версия 1.6.21. 
-  * Иначе код может не компелироваться из за работы плеера в функции hit().
+  * Перед загрузкой скетча в плату убедитесь что в "инструменты -> платы -> менеджер плат в Arduino AVR Boards (скорее всего самая врехняя) стоит версия 1.6.21. 
+  * Иначе код может не компилироваться из за работы плеера в функции hit().
   */
 
   /*
    * Сторонние библиотеки
    * Включены в скетч, однако на всякий случай.
-   * В Документы > Arduino > libraries > Названеи библиотеки
+   * В Документы > Arduino > libraries > Название библиотеки
    * QuadDisplay2         - https://github.com/amperka/QuadDisplay2
    * AmperkaFET           - https://github.com/amperka/AmperkaFET
    * DFRobotDFPlayerMini  - https://github.com/DFRobot/DFRobotDFPlayerMini
