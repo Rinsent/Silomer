@@ -160,7 +160,7 @@ void setup() {
     while (true) {
       //Включаем трек
       if (digitalRead (busy_pin)) {
-        myDFPlayer.play(13);
+        myDFPlayer.play(numberOfLight+1);
       }
       //Ставим паузу >=50 что бы плеер корректно передал сигнал
       delay(50);
