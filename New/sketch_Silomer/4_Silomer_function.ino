@@ -306,7 +306,7 @@ void mode1() {
     modeFlag = 1;
     //Текст
     if (displayType == 0) {
-      qd.displayDigits(QD_L, QD_b, QD_r, QD_d);
+      qd.displayDigits(QD_I, QD_n, QD_t, QD_r);
     }
     else if (displayType == 1) {
       digitalWrite(old_display_cs_pin, LOW);
